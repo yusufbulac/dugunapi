@@ -22,19 +22,37 @@ class ProductRepository extends ServiceEntityRepository
     public function findProducts(array $filter = []){
         $qb = $this-> createQueryBuilder("p");
 
-        $qb->select("partial p.{id,name,price,status}");
+        $qb->select("partial p.{id,name,price,status,createdAt}");
 
         if(!empty($filter["name"])){
-            $qb->where("p.name = :name")
+            $qb->andWhere("p.name = :name")
                 ->setParameter("name",$filter["name"]);
         }
 
         if(!empty($filter["status"])){
-            $qb->where("p.status = :status")
+            $qb->andWhere("p.status = :status")
                 ->setParameter("status",$filter["status"]);
+        }
+
+        if (!empty($filter['startPrice'])) {
+            $qb->andWhere($qb->expr()->gte('p.price', $filter['startPrice']));
+        }
+
+        if (!empty($filter['endPrice'])) {
+            $qb->andWhere($qb->expr()->lte('p.price', $filter['endPrice']));
+        }
+
+
+        if (!empty($filter['startDate'])) {
+            $qb->andWhere($qb->expr()->gte('p.createdAt',':startDate'))
+            ->setParameter('startDate',$filter['startDate']);
+        }
+
+        if (!empty($filter['endDate'])) {
+            $qb->andWhere($qb->expr()->lte('p.createdAt', ':endDate'))
+                ->setParameter('endDate',$filter['endDate']);
         }
 
         return $qb->getQuery()->getArrayResult();
     }
-
 }

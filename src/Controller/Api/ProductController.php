@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
-
     /**
      * @Route("/products", name="api_products_index", methods={"GET"})
      */
@@ -24,12 +23,16 @@ class ProductController extends AbstractController
         $status = $request->query->get("status");
         $startPrice = $request->query->get("startPrice");
         $endPrice = $request->query->get("endPrice");
+        $startDate = $request->query->get("startDate");
+        $endDate = $request->query->get("endDate");
 
         $products = $productRepository->findProducts([
             'name' => $name,
             'status' => $status,
             'startPrice' => $startPrice,
             'endPrice' => $endPrice,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         ]);
 
         return new JsonResponse($products, Response::HTTP_OK);

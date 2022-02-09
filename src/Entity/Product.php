@@ -37,6 +37,7 @@ class Product implements TimestampInterface
      */
     private $status;
 
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,4 +78,6 @@ class Product implements TimestampInterface
 
         return $this;
     }
+
+
 }
