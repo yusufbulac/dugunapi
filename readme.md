@@ -13,8 +13,8 @@ Response success status code : 200
 | startDate  | search by start created date |
 | endDate    | search by end created date |
 
-sample usage
-    `/products?startPrice=10000&endPrice=17000&status=active`
+sample usage<br>
+`/products?startPrice=10000&endPrice=17000&status=active`
 -----
 * POST
   `/products`
