@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
+use App\Service\SMSService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,10 +22,14 @@ class ProductController extends AbstractController
     {
         $name = $request->query->get("name");
         $status = $request->query->get("status");
+        $startPrice = $request->query->get("startPrice");
+        $endPrice = $request->query->get("endPrice");
 
         $products = $productRepository->findProducts([
-            "name" => $name,
-            "status" => $status
+            'name' => $name,
+            'status' => $status,
+            'startPrice' => $startPrice,
+            'endPrice' => $endPrice,
         ]);
 
         return new JsonResponse($products, Response::HTTP_OK);
@@ -35,21 +40,26 @@ class ProductController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request): Response
+    public function create(Request $request, SMSService $SMSService): Response
     {
         $name = $request->request->get('name');
         $price = $request->request->get('price');
         $status = $request->request->get('status');
 
         $entityManager = $this->getDoctrine()->getManager();
-        $product = new Product();
 
+        $product = new Product();
         $product
             ->setName($name)
             ->setPrice($price)
             ->setStatus($status);
         $entityManager->persist($product);
         $entityManager->flush();
+
+        $SMSService->sendSMS(
+            SMSService::SMS_TO, sprintf('The product named %s has been successfully created.',
+                $product->getName())
+        );
 
         return new JsonResponse(
             [
@@ -60,7 +70,6 @@ class ProductController extends AbstractController
             ],
             Response::HTTP_CREATED
         );
-
     }
 
 
@@ -80,8 +89,8 @@ class ProductController extends AbstractController
 
         $product = $productRepository->find($id);
 
-        if ($product == null) {
-            throw new NotFoundHttpException("Invalid ID.");
+        if (!$product) {
+            throw new NotFoundHttpException("Product ID Not Found");
         }
 
         $product

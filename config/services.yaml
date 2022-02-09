@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    twilio_username: '%env(TWILIO_USERNAME)%'
+    twilio_password: '%env(TWILIO_PASSWORD)%'
 
 services:
     # default configuration for services in *this* file
@@ -32,3 +34,8 @@ services:
     App\EventListener\RequestContentListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+    App\Service\SMSService:
+        arguments:
+            $twilioUsername: '%twilio_username%'
+            $twilioPassword: '%twilio_password%'

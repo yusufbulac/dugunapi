@@ -30,7 +30,7 @@ class RequestContentListener
         }
 
         if($request->headers->get("Content-Type") !== "application/json"){
-            throw new UnsupportedMediaTypeHttpException("Content_Type değeri yanlış");
+            throw new UnsupportedMediaTypeHttpException("Invalid Content_Type");
         }
     }
 }
