@@ -44,13 +44,15 @@ class ProductRepository extends ServiceEntityRepository
 
 
         if (!empty($filter['startDate'])) {
-            $qb->andWhere($qb->expr()->gte('p.createdAt',':startDate'))
-            ->setParameter('startDate',$filter['startDate']);
+            $startDate=\DateTime::createFromFormat('Y-m-d',$filter['startDate']);
+            $qb->andWhere('p.createdAt >= :startDate')
+                ->setParameter('startDate', $startDate->format('Y-m-d  00:00:00'));
         }
 
         if (!empty($filter['endDate'])) {
-            $qb->andWhere($qb->expr()->lte('p.createdAt', ':endDate'))
-                ->setParameter('endDate',$filter['endDate']);
+            $endDate=\DateTime::createFromFormat('Y-m-d',$filter['endDate']);
+            $qb->andWhere('p.createdAt <= :endDate')
+                ->setParameter('endDate', $endDate->format('Y-m-d 23:59:59'));
         }
 
         return $qb->getQuery()->getArrayResult();
